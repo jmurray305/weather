@@ -92,7 +92,7 @@ docker ps
 
 **Step 1 — Start the consumer (keep it running in the background):**
 ```bash
-nohup /Users/justinmurray/opt/anaconda3/bin/python /Users/justinmurray/Desktop/weather/consumer.py >> /Users/justinmurray/Desktop/weather/consumer.log 2>&1 &
+nohup python consumer.py >> consumer.log 2>&1 &
 ```
 
 **Step 2 — Run the producer manually to test:**
@@ -121,7 +121,7 @@ crontab -e
 
 Add this line:
 ```bash
-0 6 * * * /Users/justinmurray/opt/anaconda3/bin/python /Users/justinmurray/Desktop/weather/producer.py >> /Users/justinmurray/Desktop/weather/producer.log 2>&1
+0 6 * * * /path/to/python /weather/producer.py >> /weather/producer.log 2>&1
 ```
 
 Verify it saved:
@@ -129,63 +129,15 @@ Verify it saved:
 crontab -l
 ```
 
----
-
-## Running the Consumer as a Persistent Background Service (macOS)
-
-The consumer must run continuously to pick up Kafka messages. Use `launchd` to keep it alive across reboots and crashes:
-
-```bash
-nano ~/Library/LaunchAgents/com.weather.consumer.plist
-```
-
-Paste in:
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
-  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>Label</key>
-    <string>com.weather.consumer</string>
-    <key>ProgramArguments</key>
-    <array>
-        <string>/Users/justinmurray/opt/anaconda3/bin/python</string>
-        <string>/Users/justinmurray/Desktop/weather/consumer.py</string>
-    </array>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
-    <true/>
-    <key>StandardOutPath</key>
-    <string>/Users/justinmurray/Desktop/weather/consumer.log</string>
-    <key>StandardErrorPath</key>
-    <string>/Users/justinmurray/Desktop/weather/consumer.log</string>
-</dict>
-</plist>
-```
-
-Load the service:
-```bash
-launchctl load ~/Library/LaunchAgents/com.weather.consumer.plist
-```
-
-Useful commands:
-```bash
-launchctl unload ~/Library/LaunchAgents/com.weather.consumer.plist  # stop
-launchctl load   ~/Library/LaunchAgents/com.weather.consumer.plist  # start
-```
-
----
 
 ## Checking Logs
 
 ```bash
 # Producer logs
-cat /Users/justinmurray/Desktop/weather/producer.log
+cat /weather/producer.log
 
 # Consumer logs
-cat /Users/justinmurray/Desktop/weather/consumer.log
+cat /weather/consumer.log
 
 # Kafka logs
 docker-compose logs kafka
