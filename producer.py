@@ -3,17 +3,22 @@ import time
 import requests
 from datetime import datetime
 from kafka import KafkaProducer
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 producer = KafkaProducer(
     bootstrap_servers="localhost:9092",
     value_serializer=lambda v: json.dumps(v).encode("utf-8")
 )
 
+
+
 def extract():
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
-        "latitude": 39.931889,
-        "longitude": -104.875009,
+        "latitude": os.getenv("LAT"),
+        "longitude": os.getenv("LON"),
         "hourly": [
             "temperature_2m",
             "wind_speed_10m",
